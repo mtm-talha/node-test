@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Event } from './event.entity';
 
 @Entity()
 export class Workshop {
@@ -19,4 +20,8 @@ export class Workshop {
 
     @Column({ type: 'datetime' })
     createdAt: string;
+    @ManyToOne(type => Event, event => event.id)
+    event?: Event;
+    // @OneToMany(type => Event, event => event.id)
+    // event: Event;
 }

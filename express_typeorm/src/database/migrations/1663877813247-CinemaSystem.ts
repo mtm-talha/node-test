@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class CinemaSystem1663877813247 implements MigrationInterface {
   /**
@@ -31,7 +31,143 @@ export class CinemaSystem1663877813247 implements MigrationInterface {
    * As a cinema owner I dont want to configure the seating for every show
    */
   public async up(queryRunner: QueryRunner): Promise<void> {
-    throw new Error('TODO: implement migration in task 4');
+    await queryRunner.createTable(
+      new Table({
+        name: 'movie_show',
+        columns: [
+          {
+            name: 'id',
+            isPrimary: true,
+            type: 'integer',
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          { name: 'name', type: 'varchar' },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+    );
+    await queryRunner.createTable(
+      new Table({
+        name: 'show_room',
+        columns: [
+          {
+            name: 'id',
+            isPrimary: true,
+            type: 'integer',
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          { name: 'time', type: 'timestamp' },
+          { name: 'movie_id', type: 'integer' },
+          { name: 'seat_id', type: '' },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+    );
+    await queryRunner.createTable(
+      new Table({
+        name: 'seat',
+        columns: [
+          {
+            name: 'id',
+            isPrimary: true,
+            type: 'integer',
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          { name: 'type', type: 'varchar' },
+          { name: 'is_available', type: 'tinyint' },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+    );
+   
+    await queryRunner.createTable(
+      new Table({
+        name: 'seating_plan',
+        columns: [
+          {
+            name: 'id',
+            isPrimary: true,
+            type: 'integer',
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          { name: 'type', type: 'varchar' },
+          { name: 'price', type: 'varchar' },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+    );
+    await queryRunner.createTable(
+      new Table({
+        name: 'user',
+        columns: [
+          {
+            name: 'id',
+            isPrimary: true,
+            type: 'integer',
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          { name: 'seat_id', type: 'integer' },
+          { name: 'show_id', type: 'integer' },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+          },
+        ],
+      }),
+    );
+    await queryRunner.createForeignKey(
+      'user',
+      new TableForeignKey({
+        columnNames: ['seat_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'seat',
+        onDelete: 'CASCADE',
+      }),
+      
+    );
+    await queryRunner.createForeignKey(
+      'user',
+      new TableForeignKey({
+        columnNames: ['show_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'show_room',
+        onDelete: 'CASCADE',
+      }),
+      
+    );
+    await queryRunner.createForeignKey(
+      'show_room',
+      new TableForeignKey({
+        columnNames: ['seat_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'seat',
+        onDelete: 'CASCADE',
+      }),
+      
+    );
+    // throw new Error('TODO: implement migration in task 4');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}
